@@ -1,0 +1,838 @@
+:root {
+
+    --hex-size: 64px;
+
+    --hex-gap: 8px;
+
+    --background: #050507;
+
+    --aura-size: 260px;
+
+    --drawer-height: 100vh;
+
+    --drawer-transition:
+        650ms
+        cubic-bezier(
+            0.16,
+            1,
+            0.3,
+            1
+        );
+}
+
+
+/* =========================================
+   RESET
+========================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+
+    overflow: hidden;
+
+    background:
+        var(--background);
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+}
+
+
+/* =========================================
+   SCENE
+========================================= */
+
+.scene {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+}
+
+
+/* =========================================
+   GRID
+========================================= */
+
+.hex-grid {
+
+    position: relative;
+
+    width: max-content;
+    height: max-content;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    user-select: none;
+
+    contain:
+        layout
+        style;
+}
+
+
+/* =========================================
+   MULTICOLOR AURA
+========================================= */
+
+.aura {
+
+    position: absolute;
+
+    width:
+        var(--aura-size);
+
+    height:
+        var(--aura-size);
+
+    left: 0;
+    top: 0;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    z-index: 0;
+
+
+    background:
+
+        conic-gradient(
+
+            from 0deg,
+
+            #ff004c,
+            #ff7a00,
+            #ffe600,
+            #00ff88,
+            #00eaff,
+            #0066ff,
+            #7a00ff,
+            #ff00d4,
+            #ff004c
+        );
+
+
+    filter:
+        blur(48px);
+
+
+    opacity: 0;
+
+
+    transform:
+        translate(
+            -50%,
+            -50%
+        );
+
+
+    transition:
+        opacity
+        300ms
+        ease;
+
+
+    animation:
+        auraRotate
+        8s
+        linear
+        infinite;
+
+
+    will-change:
+        transform;
+}
+
+
+.aura::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 25%;
+
+    border-radius: 50%;
+
+
+    background:
+
+        conic-gradient(
+
+            from 180deg,
+
+            #ff004c,
+            #ffe600,
+            #00ff88,
+            #00eaff,
+            #7a00ff,
+            #ff00d4,
+            #ff004c
+        );
+
+
+    filter:
+        blur(28px);
+
+
+    opacity:
+        0.85;
+}
+
+
+@keyframes auraRotate {
+
+    from {
+
+        filter:
+            blur(48px)
+            hue-rotate(0deg);
+    }
+
+    to {
+
+        filter:
+            blur(48px)
+            hue-rotate(360deg);
+    }
+}
+
+
+/* =========================================
+   COLUMNS
+========================================= */
+
+.hex-column {
+
+    position: relative;
+
+    z-index: 1;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+
+    margin-left:
+        calc(
+            var(--hex-size) * -0.115
+        );
+
+    margin-right:
+        calc(
+            var(--hex-size) * -0.115
+        );
+}
+
+
+.hex-column:nth-child(even) {
+
+    transform:
+        translateY(
+            calc(
+                var(--hex-size) * 0.25
+            )
+        );
+}
+
+
+/* =========================================
+   HEXAGON
+========================================= */
+
+.hex {
+
+    position: relative;
+
+    width:
+        var(--hex-size);
+
+    height:
+        var(--hex-size);
+
+    margin:
+        calc(
+            var(--hex-gap) / 2
+        );
+
+
+    clip-path:
+
+        polygon(
+
+            25% 6.7%,
+            75% 6.7%,
+            100% 50%,
+            75% 93.3%,
+            25% 93.3%,
+            0% 50%
+        );
+
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.03
+        );
+
+
+    --desaturation: 0.80;
+
+    --saturation: 1;
+
+    --scale: 1;
+
+    --pulse: 0;
+
+    --offset-x: 0px;
+
+    --offset-y: 0px;
+
+
+    transform:
+
+        translate(
+            var(--offset-x),
+            var(--offset-y)
+        )
+
+        scale(
+            var(--scale)
+        );
+
+
+    transition:
+
+        transform
+        260ms
+        cubic-bezier(
+            0.16,
+            1,
+            0.3,
+            1
+        );
+
+
+    overflow: hidden;
+
+    will-change:
+        transform;
+}
+
+
+/* =========================================
+   IMAGE
+========================================= */
+
+.hex img {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+
+    clip-path:
+
+        polygon(
+
+            25% 6.7%,
+            75% 6.7%,
+            100% 50%,
+            75% 93.3%,
+            25% 93.3%,
+            0% 50%
+        );
+
+
+    filter:
+
+        grayscale(
+            var(--desaturation)
+        )
+
+        saturate(
+            var(--saturation)
+        )
+
+        brightness(
+            0.82
+        );
+
+
+    transition:
+
+        filter
+        260ms
+        ease,
+
+        transform
+        260ms
+        cubic-bezier(
+            0.16,
+            1,
+            0.3,
+            1
+        );
+}
+
+
+.hex:hover img {
+
+    transform:
+        scale(1.05);
+}
+
+
+/* =========================================
+   INDIVIDUAL LIGHT
+========================================= */
+
+.hex::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 3;
+
+
+    background:
+
+        radial-gradient(
+
+            circle at center,
+
+            rgba(
+                255,
+                255,
+                255,
+                calc(
+                    var(--pulse) * 0.55
+                )
+            )
+
+            0%,
+
+            rgba(
+                255,
+                255,
+                255,
+                calc(
+                    var(--pulse) * 0.22
+                )
+            )
+
+            25%,
+
+            transparent
+
+            70%
+        );
+
+
+    opacity:
+        var(--pulse);
+
+
+    pointer-events: none;
+}
+
+
+/* =========================================
+   BOTTOM NAV
+========================================= */
+
+.bottom-nav {
+
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 48px;
+
+    z-index: 20;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 34px;
+
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.90
+        );
+
+    backdrop-filter:
+        blur(10px);
+
+    -webkit-backdrop-filter:
+        blur(10px);
+}
+
+
+/* =========================================
+   NAV ITEMS
+========================================= */
+
+.nav-item {
+
+    border: 0;
+
+    outline: 0;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    letter-spacing: 0.12em;
+
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    padding: 8px 4px;
+
+    opacity: 0.72;
+
+    transition:
+        opacity 180ms ease,
+        transform 180ms ease;
+}
+
+
+.nav-item:hover {
+
+    opacity: 1;
+
+    transform:
+        translateY(-1px);
+}
+
+
+.nav-item.active {
+
+    opacity: 1;
+}
+
+
+/* =========================================
+   DRAWER
+========================================= */
+
+.drawer {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 15;
+
+    width: 100%;
+    height: var(--drawer-height);
+
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.97
+        );
+
+    color: white;
+
+    transform:
+        translateY(100%);
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        transform
+        var(--drawer-transition),
+        visibility
+        0s
+        linear
+        650ms;
+}
+
+
+.drawer.open {
+
+    transform:
+        translateY(0);
+
+    visibility: visible;
+
+    pointer-events: auto;
+
+    transition:
+        transform
+        var(--drawer-transition),
+        visibility
+        0s
+        linear
+        0s;
+}
+
+
+/* =========================================
+   DRAWER CONTENT
+========================================= */
+
+.drawer-inner {
+
+    width: 100%;
+    height: 100%;
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+}
+
+
+.drawer-content {
+
+    position: absolute;
+
+    width: min(
+        700px,
+        80vw
+    );
+
+    text-align: center;
+
+    opacity: 0;
+
+    transform:
+        translateY(10px);
+
+    pointer-events: none;
+
+    transition:
+        opacity
+        250ms
+        ease,
+
+        transform
+        250ms
+        ease;
+}
+
+
+.drawer-content.active {
+
+    opacity: 1;
+
+    transform:
+        translateY(0);
+
+    pointer-events: auto;
+}
+
+
+.drawer-label {
+
+    display: block;
+
+    margin-bottom: 18px;
+
+    font-size: 11px;
+
+    letter-spacing: 0.3em;
+
+    opacity: 0.5;
+}
+
+
+.drawer-content h1 {
+
+    margin: 0 0 20px;
+
+    font-size:
+        clamp(
+            42px,
+            8vw,
+            96px
+        );
+
+    font-weight: 400;
+
+    letter-spacing: -0.04em;
+}
+
+
+.drawer-content p {
+
+    margin: 0 auto;
+
+    max-width: 500px;
+
+    font-size: 17px;
+
+    line-height: 1.7;
+
+    color:
+        rgba(
+            255,
+            255,
+            255,
+            0.65
+        );
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (
+    max-width: 700px
+) {
+
+    :root {
+
+        --hex-size: 48px;
+
+        --hex-gap: 6px;
+
+        --aura-size: 180px;
+    }
+
+
+    .aura {
+
+        filter:
+            blur(34px);
+
+        animation-duration:
+            10s;
+    }
+
+
+    .hex {
+
+        transition:
+
+            transform
+            220ms
+            cubic-bezier(
+                0.16,
+                1,
+                0.3,
+                1
+            );
+    }
+
+
+    .bottom-nav {
+
+        height: 44px;
+
+        gap: 26px;
+    }
+
+
+    .nav-item {
+
+        font-size: 11px;
+    }
+
+
+    .drawer-content {
+
+        width: 84vw;
+    }
+
+
+    .drawer-content p {
+
+        font-size: 15px;
+    }
+}
+
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (
+    prefers-reduced-motion: reduce
+) {
+
+    .aura {
+
+        animation: none;
+    }
+
+
+    .hex,
+    .hex img,
+    .drawer,
+    .drawer-content {
+
+        transition: none;
+
+        will-change: auto;
+    }
+}
